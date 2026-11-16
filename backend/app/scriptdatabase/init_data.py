@@ -1,4 +1,3 @@
-print("⏳ Chargement des bibliothèques (PyTorch / SentenceTransformers)...")
 import os
 import sqlite3
 import pandas as pd
