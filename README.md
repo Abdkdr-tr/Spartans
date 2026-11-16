@@ -35,7 +35,7 @@ pip install -r requirements.txt
  
 Deux options : **télécharger la base déjà prête** (recommandé, rapide) ou **la générer** soi-même.
  
-### Option A : télécharger le fichier `.db` (recommandé)
+### Option A : télécharger le fichier `.db`
  
 Le fichier `.db` (déjà rempli avec les programmes, exercices et embeddings) est disponible ici :
  
