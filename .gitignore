@@ -1,0 +1,17 @@
+# Environnement virtuel
+.env/
+
+# Cache Python
+__pycache__/
+*.py[cod]
+
+# Bases de données locales
+*.db
+*.sqlite
+*.sqlite3
+
+# Éditeurs de code & système (Linux)
+.vscode/
+.idea/
+*~
+
