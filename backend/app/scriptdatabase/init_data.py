@@ -1,3 +1,4 @@
+print("⏳ Chargement des bibliothèques (PyTorch / SentenceTransformers)...")
 import os
 import sqlite3
 import pandas as pd
@@ -11,6 +12,20 @@ def nettoyer_texte_liste(valeur):
     if pd.isna(valeur):
         return ""
     return str(valeur).replace("[", "").replace("]", "").replace("'", "").replace('"', "").replace(",", " ")
+
+def formater_reps(valeur):
+    """Formate la colonne 'reps' avant insertion en base.
+    D'après la doc du dataset Kaggle, les valeurs négatives sont des durées en secondes (ex: -180 -> '180 sec').
+    """
+    if pd.isna(valeur):
+        return ""
+    try:
+        num = float(valeur)
+        if num < 0:
+            return f"{int(abs(num))} sec"
+        return str(int(num)) if num.is_integer() else str(num)
+    except ValueError:
+        return str(valeur).strip()
 
 def executer_etl():
     print("📥 Téléchargement du dataset Kaggle...")
@@ -66,18 +81,16 @@ def executer_etl():
     # Création du dossier 'database' si besoin
     os.makedirs(os.path.dirname(DB_PATH), exist_ok=True)
 
-    print("💾 Insertion des programmes, exercices et liaisons dans la base SQLite...")
+    print("💾 Insertion des programmes et des exercices dans la base SQLite...")
     connexion = sqlite3.connect(DB_PATH)
     curseur = connexion.cursor()
     
     # On vide les tables avant de les re-remplir pour repartir sur du propre
     curseur.execute("DELETE FROM program_exercises;")
-    curseur.execute("DELETE FROM exercises;")
     curseur.execute("DELETE FROM workout_programs;")
 
     # Dictionnaires pour stocker les IDs et éviter les doublons
     programmes_enregistres = {}
-    exercices_enregistres = {}
 
     # Boucle pour parcourir le DataFrame et remplir les tables relationnelles
     for index, ligne in df.iterrows():
@@ -101,56 +114,36 @@ def executer_etl():
         
         prog_id = programmes_enregistres[titre_prog]
 
-        # --- table exercises (sans embedding) ---
         nom_ex = ligne['exercise_name']
-        if nom_ex not in exercices_enregistres and nom_ex != '':
+        if nom_ex != '':
             curseur.execute("""
-                INSERT INTO exercises (title, description, target_body_part, required_equipment)
-                VALUES (?, ?, ?, ?)
-            """, (
-                nom_ex,
-                ligne['description'],
-                ligne['goal_propre'],
-                ligne['equipment_propre']
-            ))
-            exercices_enregistres[nom_ex] = curseur.lastrowid
-            
-        ex_id = exercices_enregistres.get(nom_ex)
-
-        # Si l'exercice a bien un ID valide, on insère la liaison
-        if ex_id:
-            # --- table de liaison program_exercises ---
-            curseur.execute("""
-                INSERT INTO program_exercises (program_id, exercise_id, week_number, day_number, set_count, rep_count, intensity_rate)
+                INSERT INTO program_exercises (program_id, exercise_name, week_number, day_number, set_count, rep_count, intensity_rate)
                 VALUES (?, ?, ?, ?, ?, ?, ?)
             """, (
                 prog_id,
-                ex_id,
+                nom_ex,
                 ligne['week'],
                 ligne['day'],
                 ligne['sets'],
-                str(ligne['reps']),
+                formater_reps(ligne['reps']),
                 ligne['intensity']
             ))
+
 
     connexion.commit()
 
     # Vérifications 
     curseur.execute("SELECT COUNT(*) FROM workout_programs;")
     nb_programmes = curseur.fetchone()[0]
-    
-    curseur.execute("SELECT COUNT(*) FROM exercises;")
-    nb_exercices = curseur.fetchone()[0]
-    
+
     curseur.execute("SELECT COUNT(*) FROM program_exercises;")
-    nb_liens = curseur.fetchone()[0]
+    nb_exercices_programmes = curseur.fetchone()[0]
 
     connexion.close()
 
     print(f"\n✅ ETL et peuplement terminés avec succès !")
     print(f"   - Programmes insérés (avec embeddings) : {nb_programmes}")
-    print(f"   - Exercices insérés (relationnels)    : {nb_exercices}")
-    print(f"   - Liaisons créées                     : {nb_liens}")
+    print(f"   - Exercices programmés insérés         : {nb_exercices_programmes}")
 
 if __name__ == "__main__":
     executer_etl()
