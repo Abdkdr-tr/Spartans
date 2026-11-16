@@ -8,7 +8,7 @@ class User(Base, BaseModelMixin):
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     full_name = Column(String(255), nullable=False)
-    fitness_level = Column(String(100))
+    fitness_level = Column(String(255))
     primary_goal = Column(String(255))
     medical_constraints = Column(Text)
 
