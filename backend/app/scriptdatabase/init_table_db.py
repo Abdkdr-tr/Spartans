@@ -22,15 +22,6 @@ def create_tables():
         )
     """)
 
-    cursor.execute("""
-        CREATE TABLE IF NOT EXISTS exercises (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            title TEXT NOT NULL,
-            description TEXT,
-            target_body_part TEXT,
-            required_equipment TEXT
-        )
-    """)
 
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS workout_programs (
@@ -48,14 +39,13 @@ def create_tables():
         CREATE TABLE IF NOT EXISTS program_exercises (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             program_id INTEGER,
-            exercise_id INTEGER,
+            exercise_name TEXT NOT NULL,
             week_number INTEGER,
             day_number INTEGER,
             set_count INTEGER,
             rep_count TEXT,
             intensity_rate REAL,
-            FOREIGN KEY (program_id) REFERENCES workout_programs(id),
-            FOREIGN KEY (exercise_id) REFERENCES exercises(id)
+            FOREIGN KEY (program_id) REFERENCES workout_programs(id)
         )
     """)
 
