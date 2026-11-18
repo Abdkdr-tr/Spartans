@@ -63,9 +63,9 @@ class OptionAService:
 
        debut time.perf_counter()
 
-       vecteur_requete = self.encoder_requete(requete_utilisateur)
+       vecteur_requete = self._encoder_requete(requete_utilisateur)
 
-       programmes,matrice_prog = charger_programmes()
+       programmes,matrice_prog = self._charger_programmes()
        if not programmes:
             return []
         
@@ -86,7 +86,7 @@ class OptionAService:
        temps_ms = int((time.perf_counter() - debut) * 1000)
    
        if enregistrer:  
-          self.enregistrer_historique(user_id,requete_utilisateur,resultats,temps_ms)
+          self._enregistrer_historique(user_id,requete_utilisateur,resultats,temps_ms)
       
        return resultats
 
