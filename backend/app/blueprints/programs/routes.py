@@ -1,8 +1,8 @@
 from typing import List
 from apiflask import APIBlueprint, abort
-from app.services.ProgramService import ProgramService
-from app.blueprints.programs.schemas import ProgramFilter, ProgramCreate, ProgramResponse, ProgramUpdate, ProgramResponse
-from app.blueprints.programs.schemas import ExerciseProgramFilter, ExerciseProgramCreate, ExerciseProgramResponse, ExerciseProgramUpdate, ExerciseProgramResponse
+from app.services.WorkoutProgramService import WorkoutProgramService
+from app.blueprints.programs.schemas import ProgramFilter, ProgramResponse, ProgramResponse
+from app.blueprints.programs.schemas import ExerciseProgramFilter, ExerciseProgramResponse, ExerciseProgramResponse
 # tag permet de ranger les endpoints de clothes dans une section accordéon nommée Clothes 
 # (uniquement utile pour la génération automatique de la documentation swaggerUI)
 program_bp = APIBlueprint('program', __name__, tag='Programs')
@@ -17,30 +17,30 @@ program_bp = APIBlueprint('program', __name__, tag='Programs')
 @program_bp.output(ProgramResponse)
 def list_programs(query: ProgramFilter):
     """liste tous les programmes avec filtrage (Read du CRUD)"""
-    ps = ProgramService()
+    wps = WorkoutProgramService()
     # model_dump() donne la version serialisée automatiquement (jsonify). exclude_unset permet d'être plus flexible au niveau des clés/champs non définis
-    return ps.get_all(**query.model_dump(exclude_unset=True))
+    return wps.findAll(**query.model_dump(exclude_unset=True))
 
 
 @program_bp.get('/<int:program_id>')
 @program_bp.output(ProgramResponse)
 def get_program(program_id: int):
     """obtient un programme avec ses détails (Read du CRUD)"""
-    ps = ProgramService()
-    program = ps.get_by_id(program_id)
+    wps = WorkoutProgramService()
+    program = wps.findById(program_id)
     if not program:
         abort(404, f"Programme {program_id} introuvable")
     return program
 
-
+"""
 @program_bp.post('')
 @program_bp.input(ProgramCreate, arg_name='body')
 @program_bp.output(ProgramResponse, status_code=201)
 def create_program(body: ProgramCreate):
-    """crée un nouveau programme (Create du CRUD)"""
-    ps = ProgramService()
+    #crée un nouveau programme (Create du CRUD)
+    wps = WorkoutProgramService()
     try:
-        return ps.create(body.model_dump())
+        return wps.add(body.model_dump())
     except ValueError as e:
         abort(400, str(e))
 
@@ -49,24 +49,23 @@ def create_program(body: ProgramCreate):
 @program_bp.input(ProgramUpdate, arg_name='body')
 @program_bp.output(ProgramResponse)
 def update_program(program_id: int, body: ProgramUpdate):
-    """met à jour un programme (Update du CRUD)"""
-    ps = ProgramService()
-    updated = ps.update(program_id, body.model_dump(exclude_unset=True))
+    #met à jour un programme (Update du CRUD)
+    wps = WorkoutProgramService()
+    updated = wps.update(program_id, body.model_dump(exclude_unset=True))
     if not updated:
         abort(404, f"Programme {program_id} introuvable")
     return updated
 
-
 @program_bp.delete('/<int:program_id>')
 @program_bp.output({}, status_code=204)
 def delete_program(program_id: int):
-    """supprime un programme"""
-    ps = ProgramService()
-    success = ps.delete(program_id)
+    #supprime un programme
+    wps = WorkoutProgramService()
+    success = wps.delete(program_id)
     if not success:
         abort(404, f"Programme {program_id} introuvable")
     return ''
-
+"""
 
 
 
@@ -76,30 +75,30 @@ def delete_program(program_id: int):
 @program_bp.output(ExerciseProgramResponse)
 def list_exercises(query: ExerciseProgramFilter):
     """liste tous les programmes avec filtrage (Read du CRUD)"""
-    ps = ProgramService()
+    wps = WorkoutProgramService()
     # model_dump() donne la version serialisée automatiquement (jsonify). exclude_unset permet d'être plus flexible au niveau des clés/champs non définis
-    return ps.get_all(**query.model_dump(exclude_unset=True))
+    return wps.findAll(**query.model_dump(exclude_unset=True))
 
 
 @program_bp.get('/<int:program_id>')
 @program_bp.output(ExerciseProgramResponse)
 def get_exercise(program_id: int):
     """obtient un exercice avec ses détails (Read du CRUD)"""
-    ps = ProgramService()
-    exercise = ps.get_by_id(program_id)
+    wps = WorkoutProgramService()
+    exercise = wps.findById(program_id)
     if not exercise:
         abort(404, f"Exercice {program_id} introuvable")
     return exercise
 
-
+"""
 @program_bp.post('')
 @program_bp.input(ExerciseProgramCreate, arg_name='body')
 @program_bp.output(ExerciseProgramResponse, status_code=201)
 def create_exercise(body: ExerciseProgramCreate):
-    """crée un nouvel exercice (Create du CRUD)"""
-    ps = ProgramService()
+    #crée un nouvel exercice (Create du CRUD)
+    wps = WorkoutProgramService()
     try:
-        return ps.create(body.model_dump())
+        return wps.add(body.model_dump())
     except ValueError as e:
         abort(400, str(e))
 
@@ -108,9 +107,9 @@ def create_exercise(body: ExerciseProgramCreate):
 @program_bp.input(ExerciseProgramUpdate, arg_name='body')
 @program_bp.output(ExerciseProgramResponse)
 def update_exercise(program_id: int, body: ExerciseProgramUpdate):
-    """met à jour un exercice (Update du CRUD)"""
-    ps = ProgramService()
-    updated = ps.update(program_id, body.model_dump(exclude_unset=True))
+    #met à jour un exercice (Update du CRUD)
+    wps = WorkoutProgramService()
+    updated = wps.update(program_id, body.model_dump(exclude_unset=True))
     if not updated:
         abort(404, f"Exercice {program_id} introuvable")
     return updated
@@ -119,21 +118,21 @@ def update_exercise(program_id: int, body: ExerciseProgramUpdate):
 @program_bp.delete('/<int:program_id>')
 @program_bp.output({}, status_code=204)
 def delete_exercise(program_id: int):
-    """supprime un exercice"""
-    ps = ProgramService()
-    success = ps.delete(program_id)
+    #supprime un exercice
+    wps = WorkoutProgramService()
+    success = wps.delete(program_id)
     if not success:
         abort(404, f"Exercice {program_id} introuvable")
     return ''
-
+"""
 
 
 @program_bp.get('/<int:program_id>/exercises')
 @program_bp.output(List[ExerciseProgramResponse])
 def get_exercises_of_program(program_id: int):
     """obtient tous les exercices associés à un programme"""
-    ps = ProgramService()
-    exercises = ps.get_exercises_for_program(program_id)
+    wps = WorkoutProgramService()
+    exercises = wps.get_exercises_for_program(program_id)
     if exercises is None:
         abort(404, f"Programme {program_id} introuvable")
     return exercises

@@ -29,13 +29,13 @@ class WorkoutProgramDAO(WorkoutProgramDAOInterface):
              result = session.query(
                 WorkoutProgram.id,
                 WorkoutProgram.title,
-                Workout.description,
-                Workout.target_level,
-                Workout.required_equipment
+                WorkoutProgram.description,
+                WorkoutProgram.target_level,
+                WorkoutProgram.required_equipment
                ).filter(
-                 WorkoutProgram.id = program_id
+                 WorkoutProgram.id == program_id
               ).first()
-            return result._asdict() if result else None
+             return result._asdict() if result else None
      
     def findAllEmbeddingVectors(self) -> list[Tuple[int, bytes]]:
         session = self.connect()
