@@ -23,7 +23,20 @@ class WorkoutProgramDAO(WorkoutProgramDAOInterface):
     def findById(self, program_id : int)-> Optional[WorkoutProgram]:
         with self.connect() as session:
             return session.query(WorkoutProgram).options(selectinload(WorkoutProgram.exercises)).filter(WorkoutProgram.id == program_id).first()
-
+    
+    def findByIdWithoutEmbeddingVector(self,program_id: int):
+        with self.connect() as session:
+             result = session.query(
+                WorkoutProgram.id,
+                WorkoutProgram.title,
+                Workout.description,
+                Workout.target_level,
+                Workout.required_equipment
+               ).filter(
+                 WorkoutProgram.id = program_id
+              ).first()
+            return result._asdict() if result else None
+     
     def findAllEmbeddingVectors(self) -> list[Tuple[int, bytes]]:
         session = self.connect()
 
