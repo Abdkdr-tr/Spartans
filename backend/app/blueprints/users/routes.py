@@ -18,7 +18,7 @@ def list_users(query: UserFilter):
     """liste tous les utilisateurs avec filtrage (Read du CRUD)"""
     us = UserService()
     # model_dump() donne la version serialisée automatiquement (jsonify). exclude_unset permet d'être plus flexible au niveau des clés/champs non définis
-    return us.get_all(**query.model_dump(exclude_unset=True))
+    return us.findAll(**query.model_dump(exclude_unset=True))
 
 
 @user_bp.get("/<int:user_id>")
@@ -26,7 +26,7 @@ def list_users(query: UserFilter):
 def get_user(user_id: int):
     """obtient un utilisateur avec ses détails (Read du CRUD)"""
     us = UserService()
-    user = us.get_by_id(user_id)
+    user = us.findById(user_id)
     if not user:
         abort(404, f"Utilisateur {user_id} introuvable")
     return user
@@ -35,26 +35,29 @@ def get_user(user_id: int):
 @user_bp.post("")
 @user_bp.input(UserCreate, arg_name="body")
 @user_bp.output(UserResponse, status_code=201)
-def create_user(body: UserCreate):
+def add_user(body: UserCreate):
     """crée un nouveau utilisateur (Create du CRUD)"""
     us = UserService()
     try:
-        return us.create(body.model_dump())
+        return us.add(body.model_dump())
     except ValueError as e:
         abort(400, str(e))
+
+"""
+Pas encore existant dans UserService, mais pourrait être utile pour l'avenir.
 
 # plutôt que de faire plusieurs raccourci bp.patch() bp.put() on utilise l'approche standard avec bp.route(methods=[])
 @user_bp.route("/<int:user_id>", methods=["PUT", "PATCH"])
 @user_bp.input(UserUpdate, arg_name="body")
 @user_bp.output(UserResponse)
 def update_user(user_id: int, body: UserUpdate):
-    """met à jour un utilisateur (Update du CRUD)"""
+    #met à jour un utilisateur (Update du CRUD)
     us = UserService()
     updated = us.update(user_id, body.model_dump(exclude_unset=True))
     if not updated:
         abort(404, f"Utilisateur {user_id} introuvable")
     return updated
-
+"""
 
 @user_bp.delete("/<int:user_id>")
 @user_bp.output({}, status_code=204)

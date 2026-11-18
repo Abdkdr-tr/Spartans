@@ -23,17 +23,17 @@ class OptionAService:
        self.rhs  = RecommendationHistoryService()
 
 
-   def _encoder_requete(requete_utilisateur):
+   def _encoder_requete(self, requete_utilisateur):
        vecteur = self.model.encode([requete_utilisateur])
        return np.asarray(vecteur,dtype=np.float32)
 
-   def _charger_programmes():
-       embedding_vectors_pairs = wps.findAllEmbeddingVectors()
-       programes = []
+   def _charger_programmes(self):
+       embedding_vectors_pairs = self.wps.findAllEmbeddingVectors()
+       programmes = []
        vecteurs = []
        for program_id,blob in embedding_vectors_pairs:
            vecteurs.append(np.frombuffer(blob,dtype=np.float32))
-           programes.append(wps.findByIdWithoutEmbeddingVector(program_id))
+           programmes.append(self.wps.findByIdWithoutEmbeddingVector(program_id))
        
        if not vecteurs:
           return [], np.empty((0,0),dtype=np.float32)
@@ -41,7 +41,7 @@ class OptionAService:
        matrice = np.vstack(vecteurs)
        return programmes,matrice
 
-   def _enregistrer_historique(user_id,requete_utilisateur,resultats,temps_ms):
+   def _enregistrer_historique(self, user_id, requete_utilisateur, resultats, temps_ms):
       
       sortie_brute = json.dumps(
          [
@@ -54,14 +54,14 @@ class OptionAService:
       self.rhs.add(history_data)
    
   
-   def recommendation_option_a(requete_utilisateur,top_k=3,user_id=None,enregistrer=True):
+   def recommendation_option_a(self, requete_utilisateur, top_k=3, user_id=None, enregistrer=True):
        
        if not requete_utilisateur or not requete_utilisateur.strip():
           raise ValueError("La requête utilisateur ne peut pas être vide")
        if top_k <= 0:
           raise ValueError("top_k doit être un entier strictement positif")
 
-       debut time.perf_counter()
+       debut = time.perf_counter()
 
        vecteur_requete = self._encoder_requete(requete_utilisateur)
 
@@ -70,12 +70,12 @@ class OptionAService:
             return []
         
        if vecteur_requete.shape[1] != matrice_prog.shape[1]:
-          raise Value("Mauvaise dimensions")
+          raise ValueError("Mauvaise dimensions")
 
-       scores = cosine_similarity(vecteur_requete,matrice_prog)[0]
+       score = cosine_similarity(vecteur_requete,matrice_prog)[0]
 
        top_k = min(top_k,len(programmes))
-       indice_tries = np.argsort(scores)[::-1][:top_k]
+       indices_tries = np.argsort(score)[::-1][:top_k]
 
        resultats = []
        for idx in indices_tries:
@@ -89,15 +89,3 @@ class OptionAService:
           self._enregistrer_historique(user_id,requete_utilisateur,resultats,temps_ms)
       
        return resultats
-
- 
-
-
-
-
-  
-
-      
- 
-
-

@@ -1,6 +1,5 @@
 from typing import Optional
 from pydantic import Field
-from Spartans.backend.app.blueprints.programs.schemas import ExerciceProgramSummary
 from app.blueprints.health import BaseSchema
 
 # ici on défini les schémas qui permettront de faire une validation automatique par Pydantic
