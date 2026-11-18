@@ -1,3 +1,3 @@
-from app.blueprints.programs.routes import programs_bp
+from app.blueprints.programs.routes import program_bp
 
-__all__ = ['programs_bp']
+__all__ = ['program_bp']

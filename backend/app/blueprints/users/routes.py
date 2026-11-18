@@ -1,7 +1,7 @@
 from typing import List
 from apiflask import APIBlueprint, abort
 from app.services.UserService import UserService
-from app.blueprints.users.schemas import UserFilter, UserCreate, UserResponse, UserUpdate
+from app.blueprints.users.schemas import UserFilter, UserCreate, UserResponse
 # tag permet de ranger les endpoints de clothes dans une section accordéon nommée Clothes 
 # (uniquement utile pour la génération automatique de la documentation swaggerUI)
 user_bp = APIBlueprint('user', __name__, tag='Users')

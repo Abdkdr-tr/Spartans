@@ -1,6 +1,6 @@
 from typing import Optional
 from pydantic import Field
-from app.blueprints.health import BaseSchema
+from app.blueprints.validation import BaseSchema
 
 # ici on défini les schémas qui permettront de faire une validation automatique par Pydantic
 # si nous ne devons pas aller beaucoup plus loin dans l'utilsation de Pydantic (pas besoin de faire des decorateurs par exemple),

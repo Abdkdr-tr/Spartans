@@ -1,8 +1,8 @@
 from typing import List
 from apiflask import APIBlueprint, abort
 from app.services.WorkoutProgramService import WorkoutProgramService
-from app.blueprints.programs.schemas import ProgramFilter, ProgramCreate, ProgramResponse, ProgramUpdate, ProgramResponse
-from app.blueprints.programs.schemas import ExerciseProgramFilter, ExerciseProgramCreate, ExerciseProgramResponse, ExerciseProgramUpdate, ExerciseProgramResponse
+from app.blueprints.programs.schemas import ProgramFilter, ProgramResponse, ProgramResponse
+from app.blueprints.programs.schemas import ExerciseProgramFilter, ExerciseProgramResponse, ExerciseProgramResponse
 # tag permet de ranger les endpoints de clothes dans une section accordéon nommée Clothes 
 # (uniquement utile pour la génération automatique de la documentation swaggerUI)
 program_bp = APIBlueprint('program', __name__, tag='Programs')
