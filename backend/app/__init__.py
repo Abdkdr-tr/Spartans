@@ -6,7 +6,7 @@ def create_app():
     app = Flask(__name__)
     CORS(app)
 
-    from .blueprints.health import bp as health_bp
+    from .blueprints.health import health_bp
     app.register_blueprint(health_bp, url_prefix="/api")
 
     return app
