@@ -2,7 +2,10 @@
 S5 BUT3 Info - équipe Les Blaireaux Intrépides
  
 Projet de recommandation de programmes de fitness (backend Python + base SQLite avec embeddings).
- 
+
+## Lien du projet
+https://github.com/Abdkdr-tr/Spartans
+
 ## Installation
  
 ### 1. Cloner le projet
